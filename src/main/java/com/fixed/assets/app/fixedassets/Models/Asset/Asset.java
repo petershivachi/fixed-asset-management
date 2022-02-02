@@ -3,6 +3,7 @@ package com.fixed.assets.app.fixedassets.Models.Asset;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fixed.assets.app.fixedassets.Models.Category.Category;
+import com.fixed.assets.app.fixedassets.Models.Depreciation.Depreciation;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -62,6 +63,9 @@ public class Asset {
     private String categoryCode;
     @Column(nullable = false, unique = true, length = 6, updatable = false)
     private String assetCode;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "asset")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Depreciation depreciation;
 
     public Asset() {
     }
@@ -264,5 +268,13 @@ public class Asset {
 
     public void setAssetCode(String assetCode) {
         this.assetCode = assetCode;
+    }
+
+    public Depreciation getDepreciation() {
+        return depreciation;
+    }
+
+    public void setDepreciation(Depreciation depreciation) {
+        this.depreciation = depreciation;
     }
 }
