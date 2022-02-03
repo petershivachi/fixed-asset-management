@@ -99,10 +99,6 @@ public class DepreciationResource {
         if (asset.getDepreciationType().equals("Reducing Balance Method")){
             double depreciationValue = asset.getCost() * (asset.getDepreciationRate() / 100) * (duration / 12);
 
-            System.out.println("**************************************");
-            System.out.println(depreciationValue);
-            System.out.println("**************************************");
-
             depreciationToCalculate.setDepreciation(depreciationValue);
 
             double newValue = asset.getCost() - depreciationValue;
