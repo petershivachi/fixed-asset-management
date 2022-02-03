@@ -66,6 +66,7 @@ public class Asset {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "asset")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Depreciation depreciation;
+    private Double value;
 
     public Asset() {
     }
@@ -277,5 +278,13 @@ public class Asset {
     public void setDepreciation(Depreciation depreciation) {
         depreciation.setAsset(this);
         this.depreciation = depreciation;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
     }
 }

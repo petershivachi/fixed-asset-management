@@ -107,4 +107,50 @@ public class AssetResource {
         return ResponseEntity.ok().body(new MessageResponse("Asset with the code "+ assetCode + " removed successfully"));
     }
 
+    // Method      PUT
+    // Description  Endpoint to perform asset revaluation
+    // Access    Private
+    @PostMapping("{assetCode}/revaluate-asset")
+    public ResponseEntity<?> revaluateAsset(@PathVariable String assetCode, @RequestParam Double assetValue){
+        // Check if asset exists
+        Asset assetExists = assetService.getAssetById(assetCode);
+
+        if(assetExists == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code " + assetCode + " not found"));
+        }
+
+        if(assetExists.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code " + assetCode + " not found"));
+        }
+
+        assetExists.setValue(assetValue);
+        assetExists.setDepreciationType("Reducing Balance Method");
+
+        assetService.updateAsset(assetExists);
+
+        return ResponseEntity.ok().body(assetExists);
+    }
+
+    // Method      PUT
+    // Description  Endpoint for asset write off
+    // Access    Private
+    @PutMapping("{assetCode}/asset-write-off")
+    public ResponseEntity<?> assetWriteOff(@PathVariable String assetCode, @RequestParam Double assetValue){
+        Asset assetToWriteOff = assetService.getAssetById(assetCode);
+
+        if(assetToWriteOff == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the id" + assetCode + " not found"));
+        }
+
+        if(assetToWriteOff.getDeleteFlag() == 'Y'){
+            return  ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
+        }
+        assetToWriteOff.setValue(assetValue);
+        assetToWriteOff.setDepreciationType("Reducing Balance Method");
+
+        assetService.updateAsset(assetToWriteOff);
+
+        return ResponseEntity.ok().body(assetToWriteOff);
+    }
+
 }

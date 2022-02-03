@@ -1,6 +1,7 @@
 package com.fixed.assets.app.fixedassets.Models.Depreciation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fixed.assets.app.fixedassets.Models.Asset.Asset;
 
 import javax.persistence.*;
@@ -33,6 +34,8 @@ public class Depreciation implements Serializable {
     private Date rcre = new Date();
     @Column(nullable = false, length = 6)
     private String assetCode;
+    @JsonProperty(value = "value")
+    private Double value;
 
 
     public Depreciation() {
@@ -140,5 +143,13 @@ public class Depreciation implements Serializable {
 
     public void setAssetCode(String assetCode) {
         this.assetCode = assetCode;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
     }
 }
