@@ -275,6 +275,7 @@ public class Asset {
     }
 
     public void setDepreciation(Depreciation depreciation) {
+        depreciation.setAsset(this);
         this.depreciation = depreciation;
     }
 }

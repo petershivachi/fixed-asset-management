@@ -12,7 +12,7 @@ public class Depreciation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, length = 6, unique = true)
+    @Column(nullable = false, length = 6, unique = true, updatable = true)
     private String depreciationCode;
     @Column(nullable = false)
     private Date startDate;
@@ -20,15 +20,30 @@ public class Depreciation implements Serializable {
     private Date endDate;
     private String depreciationType;
     private Long cost;
+    private String assetName;
     private Long depreciation;
     private Long newValue;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "asset_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "asset_id", nullable = false)
     @JsonIgnore
     private Asset asset;
+    @Column(nullable = false, length = 1)
+    private Character deleteFlag = 'N';
+    @Column(nullable = false)
+    private Date rcre = new Date();
+    @Column(nullable = false, length = 6)
+    private String assetCode;
 
 
     public Depreciation() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getDepreciationCode() {
@@ -93,5 +108,37 @@ public class Depreciation implements Serializable {
 
     public void setAsset(Asset asset) {
         this.asset = asset;
+    }
+
+    public Character getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Character deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+
+    public Date getRcre() {
+        return rcre;
+    }
+
+    public void setRcre(Date rcre) {
+        this.rcre = rcre;
+    }
+
+    public String getAssetName() {
+        return assetName;
+    }
+
+    public void setAssetName(String assetName) {
+        this.assetName = assetName;
+    }
+
+    public String getAssetCode() {
+        return assetCode;
+    }
+
+    public void setAssetCode(String assetCode) {
+        this.assetCode = assetCode;
     }
 }
