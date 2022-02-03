@@ -1,7 +1,6 @@
 package com.fixed.assets.app.fixedassets.Models.Category;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,10 +19,6 @@ public class CategoryService {
         category.setDeleteFlag('N');
         category.setRcre(new Date());
         return categoryRepository.save(category);
-    }
-
-    public Category getCategoryById(Long categoryId){
-        return categoryRepository.findById(categoryId).orElse(null);
     }
 
     public Category getCategory(String categoryCode){

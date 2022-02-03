@@ -54,31 +54,17 @@ public class CategoryResource {
     // Access Private
     @PostMapping("add")
     public ResponseEntity<?> addCategory(@RequestBody Category category){
+        // Assert that similar category does not exist;
+        Category categoryExists = categoryService.getCategory(category.getCategoryCode());
+
+        if(categoryExists != null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category with the code " + category.getCategoryCode() + " already exists"));
+        }
+
         Category newCategory = categoryService.addCategory(category);
 
         return ResponseEntity.ok().body(new MessageResponse("Category with the id " + newCategory.getId() + " successfully"));
     }
-
-    // Method      PUT
-    // Description Endpoint to add an asset
-    // Access Private
-//    @PutMapping("add-asset")
-//    public  ResponseEntity<?> addAsset(@RequestBody Asset asset){
-//        Category category = categoryService.getCategory(asset.getCategoryCode());
-//
-//        if(category == null){
-//            return  ResponseEntity.badRequest().body(new MessageResponse("Category with the category code " + asset.getCategoryCode() + " not found"));
-//        }
-//
-//        List<Asset> assets = new ArrayList<Asset>();
-//
-//        assets.add(asset);
-//        category.setAssets(assets);
-//        log.info("Category has {} assets", category.getAssets().size());
-//
-//        assetService.addAsset(asset);
-//        return  ResponseEntity.ok().body(new MessageResponse("Asset added to the category with code " + asset.getCategoryCode() + " successfully"));
-//    }
 
     // Method      PUT
     // Description Endpoint to update a category
@@ -95,7 +81,6 @@ public class CategoryResource {
 
         return ResponseEntity.ok().body(new MessageResponse("Category with the code " + categoryToUpdate.getCategoryCode() + " updated successfully"));
     }
-
 
     // Method      PUT
     // Description Endpoint to remove a category

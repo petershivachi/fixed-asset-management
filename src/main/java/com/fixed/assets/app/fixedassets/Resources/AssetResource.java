@@ -51,6 +51,13 @@ public class AssetResource {
     // Access   Private
     @PostMapping("add-asset")
     public ResponseEntity<?> addAssets(@RequestBody Asset asset) {
+        // Affirm that asset does not exist in the system
+        Asset assetExists = assetService.getAssetById(asset.getAssetCode());
+
+        if(assetExists != null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code " + asset.getAssetCode() + " already exists"));
+        }
+
         Category category = categoryService.getCategory(asset.getCategoryCode());
 
         if(category == null){
