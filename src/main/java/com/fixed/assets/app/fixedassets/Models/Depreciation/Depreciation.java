@@ -19,10 +19,10 @@ public class Depreciation implements Serializable {
     @Column(nullable = false)
     private Date endDate;
     private String depreciationType;
-    private Long cost;
+    private Double cost;
     private String assetName;
-    private Long depreciation;
-    private Long newValue;
+    private Double depreciation;
+    private Double newValue;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "asset_id", nullable = false)
     @JsonIgnore
@@ -78,27 +78,27 @@ public class Depreciation implements Serializable {
         this.depreciationType = depreciationType;
     }
 
-    public Long getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 
-    public Long getDepreciation() {
+    public Double getDepreciation() {
         return depreciation;
     }
 
-    public void setDepreciation(Long depreciation) {
+    public void setDepreciation(Double depreciation) {
         this.depreciation = depreciation;
     }
 
-    public Long getNewValue() {
+    public Double getNewValue() {
         return newValue;
     }
 
-    public void setNewValue(Long newValue) {
+    public void setNewValue(Double newValue) {
         this.newValue = newValue;
     }
 

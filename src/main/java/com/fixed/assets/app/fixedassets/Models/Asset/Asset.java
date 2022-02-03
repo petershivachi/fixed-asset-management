@@ -25,7 +25,7 @@ public class Asset {
     @Column(updatable = false)
     private Long size;
     @Column(nullable = false)
-    private Long cost;
+    private Double cost;
     @Column(unique = true)
     private Long serialNumber;
     @Column(updatable = false, nullable = false)
@@ -33,7 +33,7 @@ public class Asset {
     @Column(length = 50, nullable = false)
     private String depreciationType;
     @Column(nullable = false)
-    private int depreciationRate;
+    private Double depreciationRate;
     @Column(length = 70, nullable = false)
     private String custodian;
     @Column(length = 50, nullable = false)
@@ -110,11 +110,11 @@ public class Asset {
         this.size = size;
     }
 
-    public Long getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 
@@ -142,11 +142,11 @@ public class Asset {
         this.depreciationType = depreciationType;
     }
 
-    public int getDepreciationRate() {
+    public Double getDepreciationRate() {
         return depreciationRate;
     }
 
-    public void setDepreciationRate(int depreciationRate) {
+    public void setDepreciationRate(Double depreciationRate) {
         this.depreciationRate = depreciationRate;
     }
 

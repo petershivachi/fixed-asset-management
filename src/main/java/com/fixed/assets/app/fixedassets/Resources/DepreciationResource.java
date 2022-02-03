@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @CrossOrigin
@@ -83,33 +84,45 @@ public class DepreciationResource {
 
         Date start = depreciation.getStartDate();
         Date end = depreciation.getEndDate();
-        long durationInMilliseconds = end.getTime() - start.getTime();
+        double durationInMilliseconds = end.getTime() - start.getTime();
 
         // Duration in days
-        long durationInDays = (durationInMilliseconds / (1000 * 60 * 60 * 24)) / 365;
+        double durationInDays = TimeUnit.DAYS.convert((long) durationInMilliseconds, TimeUnit.MILLISECONDS);
 
         // Duration in months
-        long duration = durationInDays / 28;
+        double duration = Math.ceil(durationInDays / 30);
+
+        // Find Depreciation to calculate
+        Depreciation depreciationToCalculate = depreciationService.listDepreciationByCode(depreciation.getDepreciationCode());
 
         // Reducing Balance Method
         if (asset.getDepreciationType().equals("Reducing Balance Method")){
-            Long depreciationValue = asset.getCost() * (asset.getDepreciationRate() / 100) * (duration / 12);
+            double depreciationValue = asset.getCost() * (asset.getDepreciationRate() / 100) * (duration / 12);
 
-            depreciation.setDepreciation(depreciationValue);
+            System.out.println("**************************************");
+            System.out.println(depreciationValue);
+            System.out.println("**************************************");
 
-            Long newValue = asset.getCost() - depreciationValue;
+            depreciationToCalculate.setDepreciation(depreciationValue);
 
-            depreciation.setNewValue(newValue);
+            double newValue = asset.getCost() - depreciationValue;
+
+            depreciationToCalculate.setNewValue(newValue);
+
+            depreciationService.updateDepreciation(depreciationToCalculate);
         }else if(asset.getDepreciationType().equals("Straight Line Method")){
-            Long depreciationValue = asset.getCost() * (asset.getDepreciationRate() / 100) * (duration / 12);
+            // Straight Line Method
+            double depreciationValue = Math.round((asset.getCost() * (asset.getDepreciationRate() / 100) * (duration / 12)) * 100) / 100.0;
 
-            depreciation.setDepreciation(depreciationValue);
+            depreciationToCalculate.setDepreciation(depreciationValue);
 
-            Long newValue = asset.getCost() - depreciationValue;
+            double newValue =Math.round((asset.getCost() + depreciationValue) * 100) / 100.0;
 
-            depreciation.setNewValue(newValue);
+            depreciationToCalculate.setNewValue(newValue);
+
+            depreciationService.updateDepreciation(depreciationToCalculate);
         } else {
-            return  ResponseEntity.badRequest().body(new MessageResponse("The depreciation type you provided does not exist"));
+            return  ResponseEntity.badRequest().body(new MessageResponse("The depreciation type you provided is not supported"));
         }
 
         return listDepreciationByCode(depreciation.getDepreciationCode());
