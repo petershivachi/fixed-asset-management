@@ -40,7 +40,10 @@ public class AssetResource {
         Asset asset = assetService.getAssetById(assetCode);
 
         if(asset == null){
-            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the id" + assetCode + " not found"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code " + assetCode + " not found"));
+        }
+        if(asset.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code " + assetCode + " not found"));
         }
 
         return ResponseEntity.ok().body(assetService.getAssetById(assetCode));
@@ -64,6 +67,10 @@ public class AssetResource {
             return  ResponseEntity.badRequest().body(new MessageResponse("Category with the category code " + asset.getCategoryCode() + " not found"));
         }
 
+        if(category.getDeleteFlag() =='Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category with the category code " + asset.getCategoryCode() + " not found"));
+        }
+
         List<Asset> assets = new ArrayList<Asset>();
 
         assets.add(asset);
@@ -85,9 +92,23 @@ public class AssetResource {
             return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
         }
 
+        if(assetToUpdate.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
+        }
+
+        Category category = categoryService.getCategory(asset.getCategoryCode());
+
+        if (category == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category not found"));
+        }
+
+        if (category.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category not found"));
+        }
+
         assetService.updateAsset(asset);
 
-        return ResponseEntity.ok().body(new MessageResponse("Asset with the code "+ assetCode + " updated successfully"));
+        return ResponseEntity.ok().body(asset);
     }
 
     // Method      DELETE
@@ -100,6 +121,10 @@ public class AssetResource {
         if (assetToDelete == null){
             return  ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
         }
+
+        if (assetToDelete.getDeleteFlag() == 'Y'){
+            return  ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
+        }
         assetToDelete.setDeleteFlag('Y');
 
         assetService.deleteAsset(assetToDelete);
@@ -110,7 +135,7 @@ public class AssetResource {
     // Method      PUT
     // Description  Endpoint to perform asset revaluation
     // Access    Private
-    @PostMapping("{assetCode}/revaluate-asset")
+    @PutMapping("{assetCode}/revaluate-asset")
     public ResponseEntity<?> revaluateAsset(@PathVariable String assetCode, @RequestParam Double assetValue){
         // Check if asset exists
         Asset assetExists = assetService.getAssetById(assetCode);
@@ -152,5 +177,28 @@ public class AssetResource {
 
         return ResponseEntity.ok().body(assetToWriteOff);
     }
+
+    // Method      PUT
+    // Description  Endpoint for asset write off
+    // Access    Private
+    @PutMapping("{assetCode}/asset-dispose")
+    public ResponseEntity<?> assetDispose(@PathVariable String assetCode, @RequestParam Double assetValue){
+        Asset assetToWriteOff = assetService.getAssetById(assetCode);
+
+        if(assetToWriteOff == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Asset with the id" + assetCode + " not found"));
+        }
+
+        if(assetToWriteOff.getDeleteFlag() == 'Y'){
+            return  ResponseEntity.badRequest().body(new MessageResponse("Asset with the code "+ assetCode + " not found"));
+        }
+        assetToWriteOff.setValue(assetValue);
+        assetToWriteOff.setDepreciationType("Reducing Balance Method");
+
+        assetService.updateAsset(assetToWriteOff);
+
+        return ResponseEntity.ok().body(assetToWriteOff);
+    }
+
 
 }

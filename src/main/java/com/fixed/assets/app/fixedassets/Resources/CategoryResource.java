@@ -46,7 +46,17 @@ public class CategoryResource {
     @GetMapping("{categoryCode}")
     @ResponseBody
     public  ResponseEntity<?> getCategoryByCode(@PathVariable String categoryCode){
-        return ResponseEntity.ok().body(categoryService.getCategory(categoryCode));
+        Category categoryExists = categoryService.getCategory(categoryCode);
+
+        if (categoryExists == null){
+            return  ResponseEntity.badRequest().body(new MessageResponse("Category with the code " + categoryCode + " not found"));
+        }
+
+        if(categoryExists.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category with the code " + categoryCode + " not found"));
+        }
+
+        return ResponseEntity.ok().body(categoryExists);
     }
 
     // Method      POST
@@ -63,7 +73,7 @@ public class CategoryResource {
 
         Category newCategory = categoryService.addCategory(category);
 
-        return ResponseEntity.ok().body(new MessageResponse("Category with the id " + newCategory.getId() + " successfully"));
+        return ResponseEntity.ok().body(category);
     }
 
     // Method      PUT
@@ -76,10 +86,16 @@ public class CategoryResource {
         if (categoryToUpdate == null){
             return ResponseEntity.badRequest().body(new MessageResponse("Category with the code "+ categoryCode + " not found"));
         }
+        if(categoryToUpdate.getDeleteFlag() == 'Y'){
+            return ResponseEntity.badRequest().body(new MessageResponse("Category with the code "+ categoryCode + " not found"));
+        }
 
-        categoryService.updateCategory(category);
+        categoryToUpdate.setCategoryName(category.getCategoryName());
+        categoryToUpdate.setCategoryDescription(category.getCategoryDescription());
 
-        return ResponseEntity.ok().body(new MessageResponse("Category with the code " + categoryToUpdate.getCategoryCode() + " updated successfully"));
+        categoryService.updateCategory(categoryToUpdate);
+
+        return ResponseEntity.ok().body(categoryToUpdate);
     }
 
     // Method      PUT
