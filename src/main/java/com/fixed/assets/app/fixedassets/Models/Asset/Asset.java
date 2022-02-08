@@ -20,10 +20,10 @@ public class Asset {
     private Category category;
     @Column(length = 50, nullable = false)
     private String name;
-    @Column(updatable = false,unique = true)
+    @Column(updatable = false)
     private String lrNo;
     @Column(updatable = false)
-    private Long size;
+    private Double size;
     @Column(nullable = false)
     private Double cost;
     @Column(unique = true)
@@ -103,11 +103,11 @@ public class Asset {
         this.lrNo = lrNo;
     }
 
-    public Long getSize() {
+    public Double getSize() {
         return size;
     }
 
-    public void setSize(Long size) {
+    public void setSize(Double size) {
         this.size = size;
     }
 

@@ -28,8 +28,8 @@ public class Depreciation implements Serializable {
     @JoinColumn(name = "asset_id", nullable = false)
     @JsonIgnore
     private Asset asset;
-    @Column(nullable = false, length = 1)
-    private Character deleteFlag = 'N';
+//    @Column(nullable = false, length = 1)
+//    private Character deleteFlag = 'N';
     @Column(nullable = false)
     private Date rcre = new Date();
     @Column(nullable = false, length = 6)
@@ -113,13 +113,13 @@ public class Depreciation implements Serializable {
         this.asset = asset;
     }
 
-    public Character getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Character deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
+//    public Character getDeleteFlag() {
+//        return deleteFlag;
+//    }
+//
+//    public void setDeleteFlag(Character deleteFlag) {
+//        this.deleteFlag = deleteFlag;
+//    }
 
     public Date getRcre() {
         return rcre;

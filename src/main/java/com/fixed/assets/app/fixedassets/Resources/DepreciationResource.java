@@ -49,7 +49,6 @@ public class DepreciationResource {
     // Access Private
     @PostMapping("calculate-depreciation")
     ResponseEntity<?> addDepreciation(@RequestBody Depreciation depreciation){
-        depreciation.setDeleteFlag('N');
         depreciation.setRcre(new Date());
 
         Asset assetExists = assetService.getAssetById(depreciation.getAssetCode());

@@ -5,10 +5,13 @@ import com.fixed.assets.app.fixedassets.Models.Asset.AssetService;
 import com.fixed.assets.app.fixedassets.Models.Category.Category;
 import com.fixed.assets.app.fixedassets.Models.Category.CategoryService;
 import com.fixed.assets.app.fixedassets.Responses.MessageResponse;
+import com.fixed.assets.app.fixedassets.Utils.Excel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +114,7 @@ public class AssetResource {
         return ResponseEntity.ok().body(asset);
     }
 
-    // Method      DELETE
+    // Method      PUT
     // Description  Endpoint to delete an asset via the asset code
     // Access    Private
     @PutMapping("delete/{assetCode}")
@@ -200,5 +203,19 @@ public class AssetResource {
         return ResponseEntity.ok().body(assetToWriteOff);
     }
 
+    // Method      POST
+    // Description  Endpoint to upload excel-sheet
+    // Access    Private
+    @PostMapping("upload-excel-sheet/{categoryCode}")
+    public ResponseEntity<?> uploadExcelAssets(@RequestParam("file") MultipartFile file, @PathVariable String categoryCode){
+        String message = "";
+        if(Excel.hasExcelFormat(file)){
+            assetService.uploadExcelAssets(file, categoryCode);
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
+        }
+        message = "Please upload an excel file!";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(message));
+    }
 
 }

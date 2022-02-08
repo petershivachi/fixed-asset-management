@@ -11,7 +11,7 @@ public class DepreciationService {
     private DepreciationRepository depreciationRepository;
 
     public List<Depreciation> listAllDepreciation(){
-        return depreciationRepository.findDepreciationByDeleteFlag('N');
+        return depreciationRepository.findAll();
     }
 
     public Depreciation listDepreciationByCode(String depreciationCode){

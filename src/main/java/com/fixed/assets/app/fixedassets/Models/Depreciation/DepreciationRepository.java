@@ -8,10 +8,8 @@ import java.util.List;
 
 @Repository
 public interface DepreciationRepository extends JpaRepository<Depreciation, Long> {
-    List<Depreciation> findDepreciationByDeleteFlag(Character deleteFlag);
+    //List<Depreciation> findDepreciationByDeleteFlag(Character deleteFlag);
 
     Depreciation findByDepreciationCode(String depreciationCode);
 
-    @Transactional
-    void deleteByDepreciationCode(String depreciationCode);
 }
