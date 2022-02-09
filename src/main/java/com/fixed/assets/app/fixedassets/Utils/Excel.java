@@ -1,10 +1,7 @@
 package com.fixed.assets.app.fixedassets.Utils;
 
 import com.fixed.assets.app.fixedassets.Models.Asset.Asset;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +13,6 @@ import java.util.List;
 
 public class Excel {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    public String[] HEADERS = {"LR No.", "Size", "Name", "Cost", "Date Acquired(MM/DD/YYYY)", "Depreciation Type", "Depreciation Rate", "Custodian",
-    "Location (Ward)", "Remarks", "Local Authority", "Department Unit", "Reg No", "Engine No", "Chassis No", "Serial Number", "Make", "Model", "Type"};
-    static String SHEET = "Assets";
-
     public static boolean hasExcelFormat(MultipartFile file){
        return  TYPE.equals(file.getContentType());
     }
@@ -27,35 +20,50 @@ public class Excel {
     public static List<Asset> excelToAssets (InputStream is){
         try {
             Workbook workbook = new XSSFWorkbook(is);
-
-            //Iteration for the first worksheet
             Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet1 = workbook.getSheetAt(1);
+            Sheet sheet2 = workbook.getSheetAt(2);
+            Sheet sheet3 = workbook.getSheetAt(3);
+            Sheet sheet4 = workbook.getSheetAt(4);
+            Sheet sheet5 = workbook.getSheetAt(5);
+            Sheet sheet6 = workbook.getSheetAt(6);
+            Sheet sheet7 = workbook.getSheetAt(7);
+            Sheet sheet8 = workbook.getSheetAt(8);
+
             Iterator<Row> rows = sheet.iterator();
+            Row headerRow = rows.next();
             List<Asset> assets = new ArrayList<Asset>();
-            int rowNumber = 1;
+            int rowNumber = 2;
 
             while(rows.hasNext()){
                 Row currentRow = rows.next();
                 //Skip header
-                if(rowNumber == 1){
+                if(rowNumber == 2){
                     rowNumber++;
                     continue;
-                }
+            }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-               // asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
                     Cell currentCell = cellsInRow.next();
                     switch (cellIndex){
                         case 0:
-                            asset.setLrNo(currentCell.getStringCellValue());
+                            if(currentCell.getCellType()==CellType.STRING){
+                                asset.setLrNo(currentCell.getStringCellValue());
+                            }else if (currentCell.getCellType() == CellType.NUMERIC){
+                                asset.setLrNo(String.valueOf(currentCell.getNumericCellValue()));
+                            }
                             break;
                         case 1:
-                            //asset.setSize((long) currentCell.getNumericCellValue());
-                            continue;
+                            if (currentCell.getCellType() == CellType.STRING){
+                                asset.setSize(Double.valueOf(currentCell.getStringCellValue()));
+                            }else  if(currentCell.getCellType() == CellType.NUMERIC){
+                                asset.setSize(currentCell.getNumericCellValue());
+                            }
+                            break;
                         case 2:
                             asset.setName(currentCell.getStringCellValue());
                             break;
@@ -72,12 +80,15 @@ public class Excel {
                             asset.setDepreciationRate((double)currentCell.getNumericCellValue());
                             break;
                         case 7:
-                            asset.setLocation(currentCell.getStringCellValue());
+                            asset.setCustodian(currentCell.getStringCellValue());
                             break;
                         case 8:
-                            asset.setRemarks(currentCell.getStringCellValue());
+                            asset.setLocation(currentCell.getStringCellValue());
                             break;
                         case 9:
+                            asset.setRemarks(currentCell.getStringCellValue());
+                            break;
+                        case 10:
                             asset.setDepartmentUnit(currentCell.getStringCellValue());
                             break;
                         default:
@@ -89,21 +100,20 @@ public class Excel {
             }
 
             //Iteration for the second worksheet
-            Sheet sheet1 = workbook.getSheetAt(1);
-             rows = sheet1.iterator();
+            Iterator<Row> sheet1Rows = sheet1.iterator();
+            Row sheet1HeaderRow = sheet1Rows.next();
+            int sheet1RowNumber = 3;
 
-             while (rows.hasNext()){
-                 Row currentRow = rows.next();
-
+             while (sheet1Rows.hasNext()){
+                 Row currentRow = sheet1Rows.next();
                  //Skip header
-                 if(rowNumber == 0){
-                     rowNumber++;
+                  if(sheet1RowNumber == 3){
+                     sheet1RowNumber++;
                      continue;
                  }
 
                  Iterator<Cell> cellsInRow = currentRow.iterator();
                  Asset asset = new Asset();
-                 //asset.setCategoryCode(categoryCode);
                  int cellIndex = 0;
 
                  while (cellsInRow.hasNext()){
@@ -113,9 +123,13 @@ public class Excel {
                              asset.setLrNo(currentCell.getStringCellValue());
                              break;
                          case 1:
-                             //asset.setSize(currentCell.getNumericCellValue());
-                             continue;
-                             //break;
+                             if(currentCell.getCellType() == CellType.NUMERIC){
+                                 asset.setSize(currentCell.getNumericCellValue());
+                             }else if(currentCell.getCellType() ==
+                                CellType.STRING){
+                                 asset.setSize(Double.valueOf(currentCell.getStringCellValue()));
+                             }
+                             break;
                          case 2:
                              asset.setLocalAuthority(currentCell.getStringCellValue());
                              break;
@@ -123,7 +137,7 @@ public class Excel {
                              asset.setName(currentCell.getStringCellValue());
                              break;
                          case 4:
-                             asset.setCost((double) currentCell.getNumericCellValue());
+                             asset.setCost(currentCell.getNumericCellValue());
                              break;
                          case  5:
                              asset.setDateAcquired(currentCell.getDateCellValue());
@@ -132,7 +146,7 @@ public class Excel {
                              asset.setDepreciationType(currentCell.getStringCellValue());
                              break;
                          case 7:
-                             asset.setDepreciationRate((double) currentCell.getNumericCellValue());
+                             asset.setDepreciationRate(currentCell.getNumericCellValue());
                              break;
                          case 8:
                              asset.setCustodian(currentCell.getStringCellValue());
@@ -154,22 +168,21 @@ public class Excel {
                  assets.add(asset);
              }
 
-             //CIteration for the third sheet
-            Sheet sheet2 = workbook.getSheetAt(2);
-             rows = sheet2.iterator();
+             //Iteration for the third sheet
+             Iterator<Row> sheet2Rows = sheet2.iterator();
+             Row sheet2HeaderRow = sheet2Rows.next();
+             int sheet2RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
-
+            while (sheet2Rows.hasNext()){
+                Row currentRow = sheet2Rows.next();
                 //Skip header
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet2RowNumber == 2){
+                    sheet2RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
@@ -191,7 +204,7 @@ public class Excel {
                             asset.setName(currentCell.getStringCellValue());
                             break;
                         case  5:
-                            asset.setCost((double) currentCell.getNumericCellValue());
+                            asset.setCost(currentCell.getNumericCellValue());
                             break;
                         case 6:
                             asset.setDateAcquired(currentCell.getDateCellValue());
@@ -223,28 +236,27 @@ public class Excel {
             }
 
             //Iteration for the fourth sheet
-            Sheet sheet3 = workbook.getSheetAt(3);
-            rows = sheet3.iterator();
+            Iterator<Row> sheet3Rows = sheet3.iterator();
+            Row sheet3HeaderRow = sheet3Rows.next();
+            int sheet3RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet3Rows.hasNext()){
+                Row currentRow = sheet3Rows.next();
 
                 //Skip header
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet3RowNumber == 2){
+                    sheet3RowNumber++;
                     continue;
                 }
-
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
                     Cell currentCell = cellsInRow.next();
                     switch (cellIndex){
                         case 0:
-                            asset.setSerialNumber((long) currentCell.getNumericCellValue());
+                            asset.setSerialNumber(currentCell.getStringCellValue());
                             break;
                         case 1:
                             asset.setMake(currentCell.getStringCellValue());
@@ -256,7 +268,11 @@ public class Excel {
                             asset.setName(currentCell.getStringCellValue());
                             break;
                         case 4:
-                            asset.setCost((double) currentCell.getNumericCellValue());
+                            if (currentCell.getCellType() == CellType.NUMERIC){
+                                asset.setCost(currentCell.getNumericCellValue());
+                            }else if(currentCell.getCellType() == CellType.STRING){
+                                asset.setCost(Double.valueOf(currentCell.getStringCellValue()));
+                            }
                             break;
                         case  5:
                             asset.setDateAcquired(currentCell.getDateCellValue());
@@ -288,27 +304,27 @@ public class Excel {
             }
 
             //Cell iteration for worksheet five
-            Sheet sheet4 = workbook.getSheetAt(4);
-            rows = sheet4.iterator();
+            Iterator<Row> sheet4Rows = sheet4.iterator();
+            Row sheet4HeaderRow = sheet4Rows.next();
+            int sheet4RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet4Rows.hasNext()){
+                Row currentRow = sheet4Rows.next();
 
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet4RowNumber == 2){
+                    sheet4RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
                     Cell currentCell = cellsInRow.next();
                     switch (cellIndex){
                         case 0:
-                            asset.setSerialNumber((long) currentCell.getNumericCellValue());
+                            asset.setSerialNumber(currentCell.getStringCellValue());
                             break;
                         case 1:
                             asset.setMake(currentCell.getStringCellValue());
@@ -329,7 +345,7 @@ public class Excel {
                             asset.setDepreciationType(currentCell.getStringCellValue());
                             break;
                         case 7:
-                            asset.setDepreciationRate((double) currentCell.getNumericCellValue());
+                            asset.setDepreciationRate(currentCell.getNumericCellValue());
                             break;
                         case 8:
                             asset.setCustodian(currentCell.getStringCellValue());
@@ -352,27 +368,27 @@ public class Excel {
             }
 
             //Iteration for worksheet six
-            Sheet sheet5 = workbook.getSheetAt(5);
-            rows = sheet5.iterator();
+            Iterator<Row> sheet5Rows = sheet5.iterator();
+            Row sheet5HeaderRows = sheet5Rows.next();
+            int sheet5RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet5Rows.hasNext()){
+                Row currentRow = sheet5Rows.next();
 
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet5RowNumber == 2){
+                    sheet5RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                     while (cellsInRow.hasNext()){
                         Cell currentCell = cellsInRow.next();
                         switch (cellIndex){
                             case 0:
-                                asset.setSerialNumber((long) currentCell.getNumericCellValue());
+                                asset.setSerialNumber(currentCell.getStringCellValue());
                                 break;
                             case 1:
                                 asset.setType(currentCell.getStringCellValue());
@@ -413,27 +429,31 @@ public class Excel {
             }
 
             //Iteration for worksheet seven
-            Sheet sheet6 = workbook.getSheetAt(6);
-            rows = sheet6.iterator();
+            Iterator<Row> sheet6Rows = sheet6.iterator();
+            Row sheet6HeaderRow = sheet6Rows.next();
+            int sheet6RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet6Rows.hasNext()){
+                Row currentRow = sheet6Rows.next();
 
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet6RowNumber == 2){
+                    sheet6RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
                     Cell currentCell = cellsInRow.next();
                     switch (cellIndex){
                         case 0:
-                            asset.setSerialNumber((long) currentCell.getNumericCellValue());
+                            if(currentCell.getCellType() == CellType.NUMERIC){
+                                asset.setSerialNumber(String.valueOf(currentCell.getNumericCellValue()));
+                            }else if (currentCell.getCellType() == CellType.STRING){
+                                asset.setSerialNumber(currentCell.getStringCellValue());
+                            }
                             break;
                         case 1:
                             asset.setType(currentCell.getStringCellValue());
@@ -474,20 +494,20 @@ public class Excel {
             }
 
             //Iteration for worksheet eight
-            Sheet sheet7 = workbook.getSheetAt(7);
-            rows = sheet7.iterator();
+            Iterator<Row> sheet7Rows = sheet7.iterator();
+            Row sheet7HeaderRow = sheet7Rows.next();
+            int sheet7RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet7Rows.hasNext()){
+                Row currentRow = sheet7Rows.next();
 
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet7RowNumber == 2){
+                    sheet7RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
@@ -532,27 +552,27 @@ public class Excel {
             }
 
             //Iteration for worksheet nine
-            Sheet sheet8 = workbook.getSheetAt(8);
-            rows = sheet8.iterator();
+            Iterator<Row> sheet8Rows = sheet8.iterator();
+            Row sheet8HeaderRow = sheet8Rows.next();
+            int sheet8RowNumber = 2;
 
-            while (rows.hasNext()){
-                Row currentRow = rows.next();
+            while (sheet8Rows.hasNext()){
+                Row currentRow = sheet8Rows.next();
 
-                if(rowNumber == 0){
-                    rowNumber++;
+                if(sheet8RowNumber == 2){
+                    sheet8RowNumber++;
                     continue;
                 }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
-                //asset.setCategoryCode(categoryCode);
                 int cellIndex = 0;
 
                 while (cellsInRow.hasNext()){
                     Cell currentCell = cellsInRow.next();
                     switch (cellIndex){
                         case 0:
-                            asset.setSerialNumber((long) currentCell.getNumericCellValue());
+                            asset.setSerialNumber(currentCell.getStringCellValue());
                             break;
                         case 1:
                             asset.setType(currentCell.getStringCellValue());

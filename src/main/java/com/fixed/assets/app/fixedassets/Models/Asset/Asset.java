@@ -27,7 +27,7 @@ public class Asset {
     @Column(nullable = false)
     private Double cost;
     @Column(unique = true)
-    private Long serialNumber;
+    private String serialNumber;
     @Column(updatable = false, nullable = false)
     private Date dateAcquired;
     @Column(length = 50, nullable = false)
@@ -119,11 +119,11 @@ public class Asset {
         this.cost = cost;
     }
 
-    public Long getSerialNumber() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(Long serialNumber) {
+    public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 

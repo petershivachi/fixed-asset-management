@@ -41,6 +41,7 @@ public class AssetService {
                asset.setCategoryCode(categoryCode);
                asset.setRcre(new Date());
                asset.setDeleteFlag('N');
+               asset.setAssetCode("hdpi");
            });
            assetRepository.saveAll(assets);
        }catch (IOException e){
