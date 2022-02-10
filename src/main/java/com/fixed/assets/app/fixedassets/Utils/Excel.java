@@ -33,15 +33,15 @@ public class Excel {
             Iterator<Row> rows = sheet.iterator();
             Row headerRow = rows.next();
             List<Asset> assets = new ArrayList<Asset>();
-            int rowNumber = 2;
+            int rowNumber = 0;
 
             while(rows.hasNext()){
                 Row currentRow = rows.next();
                 //Skip header
-                if(rowNumber == 2){
+                if(rowNumber == 0){
                     rowNumber++;
                     continue;
-            }
+                }
 
                 Iterator<Cell> cellsInRow = currentRow.iterator();
                 Asset asset = new Asset();
@@ -68,7 +68,7 @@ public class Excel {
                             asset.setName(currentCell.getStringCellValue());
                             break;
                         case 3:
-                            asset.setCost((double)currentCell.getNumericCellValue());
+                            asset.setCost(currentCell.getNumericCellValue());
                             break;
                         case 4:
                             asset.setDateAcquired(currentCell.getDateCellValue());
@@ -89,13 +89,19 @@ public class Excel {
                             asset.setRemarks(currentCell.getStringCellValue());
                             break;
                         case 10:
-                            asset.setDepartmentUnit(currentCell.getStringCellValue());
+                            if(currentCell.getCellType() == CellType.STRING){
+                                asset.setDepartmentUnit(currentCell.getStringCellValue());
+                            }else if(currentCell.getCellType() == CellType.NUMERIC){
+                                asset.setDepartmentUnit(String.valueOf(currentCell.getNumericCellValue()));
+                            }
                             break;
                         default:
                             break;
                     }
                     cellIndex++;
                 }
+                if (!rows.hasNext())break;
+
                 assets.add(asset);
             }
 
@@ -120,7 +126,11 @@ public class Excel {
                      Cell currentCell = cellsInRow.next();
                      switch (cellIndex){
                          case 0:
-                             asset.setLrNo(currentCell.getStringCellValue());
+                             if(currentCell.getCellType() == CellType.STRING){
+                                 asset.setLrNo(currentCell.getStringCellValue());
+                             }else if(currentCell.getCellType() == CellType.NUMERIC){
+                                 asset.setLrNo(String.valueOf(currentCell.getNumericCellValue()));
+                             }
                              break;
                          case 1:
                              if(currentCell.getCellType() == CellType.NUMERIC){
@@ -168,7 +178,7 @@ public class Excel {
                  assets.add(asset);
              }
 
-             //Iteration for the third sheet
+            //Iteration for the third sheet
              Iterator<Row> sheet2Rows = sheet2.iterator();
              Row sheet2HeaderRow = sheet2Rows.next();
              int sheet2RowNumber = 2;
@@ -366,6 +376,7 @@ public class Excel {
                 }
                 assets.add(asset);
             }
+
 
             //Iteration for worksheet six
             Iterator<Row> sheet5Rows = sheet5.iterator();
@@ -613,7 +624,6 @@ public class Excel {
             }
 
             workbook.close();
-
             return assets;
         }catch (IOException e){
             throw new RuntimeException("Fail to parse Excel file: "+e.getMessage());

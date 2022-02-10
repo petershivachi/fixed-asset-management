@@ -110,6 +110,7 @@ public class Depreciation implements Serializable {
     }
 
     public void setAsset(Asset asset) {
+        asset.setDepreciation(this);
         this.asset = asset;
     }
 

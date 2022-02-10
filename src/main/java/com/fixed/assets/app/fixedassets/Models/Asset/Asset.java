@@ -26,7 +26,7 @@ public class Asset {
     private Double size;
     @Column(nullable = false)
     private Double cost;
-    @Column(unique = true)
+    @Column(unique = true, length = 50)
     private String serialNumber;
     @Column(updatable = false, nullable = false)
     private Date dateAcquired;

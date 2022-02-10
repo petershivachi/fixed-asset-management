@@ -209,8 +209,11 @@ public class AssetResource {
     @PostMapping("upload-excel-sheet/{categoryCode}")
     public ResponseEntity<?> uploadExcelAssets(@RequestParam("file") MultipartFile file, @PathVariable String categoryCode){
         String message = "";
+     System.out.println("testing0");
         if(Excel.hasExcelFormat(file)){
+         System.out.println("testing1");
             assetService.uploadExcelAssets(file, categoryCode);
+         System.out.println("testing2");
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
         }

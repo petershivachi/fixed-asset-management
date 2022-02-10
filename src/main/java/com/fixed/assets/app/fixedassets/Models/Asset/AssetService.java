@@ -1,11 +1,13 @@
 package com.fixed.assets.app.fixedassets.Models.Asset;
 
+import com.fixed.assets.app.fixedassets.Utils.AssetCodeGeneratorUtil;
 import com.fixed.assets.app.fixedassets.Utils.Excel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +15,9 @@ import java.util.List;
 public class AssetService {
     @Autowired
     private AssetRepository assetRepository;
+
+    @Autowired
+    AssetCodeGeneratorUtil assetCodeGeneratorUtil;
 
     public List<Asset> getAllAssets(){
         return assetRepository.findByDeleteFlag('N');
@@ -37,13 +42,17 @@ public class AssetService {
    public void uploadExcelAssets(MultipartFile file, String categoryCode){
        try {
            List<Asset> assets = Excel.excelToAssets(file.getInputStream());
-           assets.forEach(asset -> {
-               asset.setCategoryCode(categoryCode);
-               asset.setRcre(new Date());
-               asset.setDeleteFlag('N');
-               asset.setAssetCode("hdpi");
-           });
-           assetRepository.saveAll(assets);
+           List <Asset> myAssets = new ArrayList<Asset>();
+               assets.forEach(asset -> {
+                   asset.setCategoryCode(categoryCode);
+                   asset.setRcre(new Date());
+                   asset.setDeleteFlag('N');
+                   asset.setAssetCode(assetCodeGeneratorUtil.generateAssetCode());
+                   System.out.println("trial"+asset.getCost());
+                   myAssets.add(asset);
+               });
+
+               assetRepository.saveAll(assets);
        }catch (IOException e){
            throw new RuntimeException("Fail to parse Excel file: " + e.getMessage());
        }
