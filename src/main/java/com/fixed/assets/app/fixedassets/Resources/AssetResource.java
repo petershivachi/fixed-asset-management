@@ -209,11 +209,20 @@ public class AssetResource {
     @PostMapping("upload-excel-sheet/{categoryCode}")
     public ResponseEntity<?> uploadExcelAssets(@RequestParam("file") MultipartFile file, @PathVariable String categoryCode){
         String message = "";
-     System.out.println("testing0");
+        Category category = categoryService.getCategory(categoryCode);
+
+        if(category == null){
+            message = "The category you're trying to upload assets to was not found";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(message));
+        }
+
+        if(category.getDeleteFlag() == 'Y'){
+            message = "The category you're trying to upload assets to was not found";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(message));
+        }
+
         if(Excel.hasExcelFormat(file)){
-         System.out.println("testing1");
             assetService.uploadExcelAssets(file, categoryCode);
-         System.out.println("testing2");
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(message));
         }
