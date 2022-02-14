@@ -2,6 +2,7 @@ package com.fixed.assets.app.fixedassets.Models.Locations;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 public class Location implements Serializable {
@@ -11,6 +12,12 @@ public class Location implements Serializable {
   @Column(nullable = false, length = 100)
   private String location;
   private String coordinates;
+  @Column(nullable = false, length = 11, unique = true)
+  private String locationCode;
+  @Column(nullable = false)
+  private Date rcre;
+  @Column(nullable = false, length = 1)
+  private Character deleteFlag;
 
   public Location() {
   }
@@ -28,7 +35,7 @@ public class Location implements Serializable {
   }
 
   public void setLocation(String location) {
-    location = location;
+    this.location = location;
   }
 
   public String getCoordinates() {
@@ -37,5 +44,29 @@ public class Location implements Serializable {
 
   public void setCoordinates(String coordinates) {
     this.coordinates = coordinates;
+  }
+
+  public String getLocationCode() {
+    return locationCode;
+  }
+
+  public void setLocationCode(String locationCode) {
+    this.locationCode = locationCode;
+  }
+
+  public Date getRcre() {
+    return rcre;
+  }
+
+  public void setRcre(Date rcre) {
+    this.rcre = rcre;
+  }
+
+  public Character getDeleteFlag() {
+    return deleteFlag;
+  }
+
+  public void setDeleteFlag(Character deleteFlag) {
+    this.deleteFlag = deleteFlag;
   }
 }
